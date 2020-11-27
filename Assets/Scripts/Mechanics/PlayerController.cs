@@ -108,6 +108,7 @@ namespace Platformer.Mechanics
                     }
                     if (Time.time - lastTap < tapTime && countR >= 2)
                     {
+                        
                         Debug.Log("Double Tap Right");
                         countR = 0;
                         isTapping = false;
