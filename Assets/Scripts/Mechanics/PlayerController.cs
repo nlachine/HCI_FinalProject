@@ -50,6 +50,8 @@ namespace Platformer.Mechanics
         private int countL = 0;
         private int countR = 0;
 
+        public bool isDoubleTap = false;
+
         void Awake()
         {
             health = GetComponent<Health>();
@@ -57,9 +59,6 @@ namespace Platformer.Mechanics
             collider2d = GetComponent<Collider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-
-            
-            
         }
 
         protected override void Update()
@@ -68,7 +67,11 @@ namespace Platformer.Mechanics
             {
                 move.x = Input.GetAxis("Horizontal");
                 if (jumpState == JumpState.Grounded && Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
+                {
                     jumpState = JumpState.PrepareToJump;
+                    countL = 0;
+                    countR = 0;
+                }
                 else if (Input.GetKeyUp(KeyCode.LeftArrow) && Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.A) && Input.GetKeyUp(KeyCode.D))
                 {
                     stopJump = true;
@@ -88,7 +91,10 @@ namespace Platformer.Mechanics
                     if (Time.time - lastTap < tapTime && countL >= 2)
                     {
                         Debug.Log("Double Tap Left");
-                        
+
+                        isDoubleTap = true;
+                        this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = true;
+
                         countL = 0;
                         isTapping = false;
                     }
@@ -107,9 +113,12 @@ namespace Platformer.Mechanics
                         StartCoroutine(SingleTapRight());
                     }
                     if (Time.time - lastTap < tapTime && countR >= 2)
-                    {
-                        
+                    {     
                         Debug.Log("Double Tap Right");
+
+                        isDoubleTap = true;
+                        this.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
+
                         countR = 0;
                         isTapping = false;
                     }
@@ -133,8 +142,14 @@ namespace Platformer.Mechanics
 
             if (isTapping)
             {
+                isDoubleTap = false;
                 Debug.Log("Single Tap Left!");
                 isTapping = false;
+                this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = false;
+            }
+            if (isDoubleTap)
+            {
+                this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = false;
             }
         }
 
@@ -144,8 +159,14 @@ namespace Platformer.Mechanics
 
             if (isTapping)
             {
+                isDoubleTap = false;
                 Debug.Log("Single Tap Right!");
                 isTapping = false;
+                this.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+            }
+            if (isDoubleTap)
+            {
+                this.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
             }
         }
 

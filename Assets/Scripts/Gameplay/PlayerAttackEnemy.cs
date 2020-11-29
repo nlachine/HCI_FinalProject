@@ -1,4 +1,4 @@
-using Platformer.Core;
+﻿using Platformer.Core;
 using Platformer.Mechanics;
 using Platformer.Model;
 using UnityEngine;
@@ -6,12 +6,7 @@ using static Platformer.Core.Simulation;
 
 namespace Platformer.Gameplay
 {
-
-    /// <summary>
-    /// Fired when a Player collides with an Enemy.
-    /// </summary>
-    /// <typeparam name="EnemyCollision"></typeparam>
-    public class PlayerEnemyCollision : Simulation.Event<PlayerEnemyCollision>
+    public class PlayerAttackEnemy : Simulation.Event<PlayerAttackEnemy>
     {
         public EnemyController enemy;
         public PlayerController player;
@@ -20,11 +15,33 @@ namespace Platformer.Gameplay
 
         public override void Execute()
         {
-            var willHurtEnemy = player.Bounds.center.y >= enemy.Bounds.max.y;
-  
+            var willHurtEnemyAttackFromLeft = player.Bounds.center.x >= enemy.Bounds.min.x;
+            var willHurtEnemyAttackFromRight = player.Bounds.center.x <= enemy.Bounds.max.x;
 
-            if (willHurtEnemy)
+            if (willHurtEnemyAttackFromLeft)
             {
+                var enemyHealth = enemy.GetComponent<Health>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.Decrement();
+                    if (!enemyHealth.IsAlive)
+                    {
+                        Schedule<EnemyDeath>().enemy = enemy;
+                        player.Bounce(2);
+                    }
+                    else
+                    {
+                        player.Bounce(7);
+                    }
+                }
+                else
+                {
+                    Schedule<EnemyDeath>().enemy = enemy;
+                    player.Bounce(2);
+                }
+            }
+            else if (willHurtEnemyAttackFromRight)
+            { 
                 var enemyHealth = enemy.GetComponent<Health>();
                 if (enemyHealth != null)
                 {
@@ -52,3 +69,4 @@ namespace Platformer.Gameplay
         }
     }
 }
+

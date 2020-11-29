@@ -34,9 +34,25 @@ namespace Platformer.Mechanics
         void OnCollisionEnter2D(Collision2D collision)
         {
             var player = collision.gameObject.GetComponent<PlayerController>();
+
             if (player != null)
             {
                 var ev = Schedule<PlayerEnemyCollision>();
+                ev.player = player;
+                ev.enemy = this;
+            }
+        }
+
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            var player = collision.gameObject.GetComponentInParent<PlayerController>();
+            var triggerBox = collision.gameObject.GetComponent<BoxCollider2D>();
+
+            Debug.Log(player.isDoubleTap);
+
+            if (triggerBox != null && player.isDoubleTap)
+            {
+                var ev = Schedule<PlayerAttackEnemy>();
                 ev.player = player;
                 ev.enemy = this;
             }
