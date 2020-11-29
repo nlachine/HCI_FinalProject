@@ -14,9 +14,12 @@ namespace Platformer.Mechanics
     /// </summary>
     public class PlayerController : KinematicObject
     {
+        public GameObject player;
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
+
+        public ParticleSystem attackParticle;
 
         /// <summary>
         /// Max horizontal speed of the player.
@@ -57,13 +60,11 @@ namespace Platformer.Mechanics
             collider2d = GetComponent<Collider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-
-            
-            
         }
 
         protected override void Update()
         {
+            
             if (controlEnabled)
             {
                 move.x = Input.GetAxis("Horizontal");
@@ -88,7 +89,9 @@ namespace Platformer.Mechanics
                     if (Time.time - lastTap < tapTime && countL >= 2)
                     {
                         Debug.Log("Double Tap Left");
-                        
+                        animator.SetTrigger("attackTrig");
+                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
+                        attackParticle.Play();
                         countL = 0;
                         isTapping = false;
                     }
@@ -108,7 +111,9 @@ namespace Platformer.Mechanics
                     }
                     if (Time.time - lastTap < tapTime && countR >= 2)
                     {
-                        
+                        animator.SetTrigger("attackTrig");
+                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z); 
+                        attackParticle.Play();
                         Debug.Log("Double Tap Right");
                         countR = 0;
                         isTapping = false;
@@ -125,6 +130,7 @@ namespace Platformer.Mechanics
             }
             UpdateJumpState();
             base.Update();
+         
         }
 
         private IEnumerator SingleTapLeft()
