@@ -50,7 +50,7 @@ namespace Platformer.Mechanics
 
             Debug.Log(player.isDoubleTap);
 
-            if (triggerBox != null && player.isDoubleTap)
+            if (triggerBox != null)
             {
                 var ev = Schedule<PlayerAttackEnemy>();
                 ev.player = player;

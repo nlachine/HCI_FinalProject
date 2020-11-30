@@ -32,13 +32,16 @@ namespace Platformer.Mechanics
 
         public JumpState jumpState = JumpState.Grounded;
         private bool stopJump;
-        /*internal new*/ public Collider2D collider2d;
-        /*internal new*/ public AudioSource audioSource;
+        /*internal new*/
+        public Collider2D collider2d;
+        /*internal new*/
+        public AudioSource audioSource;
         public Health health;
         public bool controlEnabled = true;
 
         bool jump;
         Vector2 move;
+        float lastLookDirection = 0f;
         SpriteRenderer spriteRenderer;
         internal Animator animator;
         readonly PlatformerModel model = Simulation.GetModel<PlatformerModel>();
@@ -66,74 +69,41 @@ namespace Platformer.Mechanics
 
         protected override void Update()
         {
-            
             if (controlEnabled)
             {
-                move.x = Input.GetAxis("Horizontal");
-                if (jumpState == JumpState.Grounded && Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
+                if (velocity.magnitude != 0)
                 {
-                    jumpState = JumpState.PrepareToJump;
-                    countL = 0;
-                    countR = 0;
+                    lastLookDirection = velocity.magnitude;
                 }
-                else if (Input.GetKeyUp(KeyCode.LeftArrow) && Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.A) && Input.GetKeyUp(KeyCode.D))
+                move.x = Input.GetAxis("Horizontal");
+                if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump"))
+                    jumpState = JumpState.PrepareToJump;
+                else if (Input.GetButtonUp("Jump"))
                 {
                     stopJump = true;
                     Schedule<PlayerStopJump>().player = this;
                 }
 
-                if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    countL++;
-                    Debug.Log(countL);
-                    
-                    if (!isTapping)
+                    if (lastLookDirection > 0)
                     {
-                        isTapping = true;
-                        StartCoroutine(SingleTapLeft());
-                    }
-                    if (Time.time - lastTap < tapTime && countL >= 2)
-                    {
-                        Debug.Log("Double Tap Left");
-                        isDoubleTap = true;
-                        this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = true;
+                        StartCoroutine(FinishAttack());
                         animator.SetTrigger("attackTrig");
-                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
-                        attackParticle.Play();
-                        countL = 0;
-                        isTapping = false;
-                    }
-                    /*if (Time.time - lastTap > tapTime)
-                        countL = 0;*/
-                    
-                    lastTap = Time.time;
-                }
-                if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-                {
-                    countR++;
-                    Debug.Log(countR);
-                    if (!isTapping)
-                    {
-                        isTapping = true;
-                        StartCoroutine(SingleTapRight());
-                    }
-                    if (Time.time - lastTap < tapTime && countR >= 2)
-                    {
-                        animator.SetTrigger("attackTrig");
-                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z); 
+                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
                         attackParticle.Play();
-                        Debug.Log("Double Tap Right");
 
-                        isDoubleTap = true;
                         this.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
-
-                        countR = 0;
-                        isTapping = false;
                     }
-                    /*if (Time.time - lastTap > tapTime)
-                        countR = 0;*/
+                    if (lastLookDirection < 0)
+                    {
+                        StartCoroutine(FinishAttack());
+                        animator.SetTrigger("attackTrig");
+                        attackParticle.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
+                        attackParticle.Play();
 
-                    lastTap = Time.time;
+                        this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = true;
+                    }
                 }
             }
             else
@@ -142,8 +112,15 @@ namespace Platformer.Mechanics
             }
             UpdateJumpState();
             base.Update();
-         
         }
+
+        private IEnumerator FinishAttack()
+        {
+            yield return new WaitForSeconds(0.2f);
+            this.transform.GetChild(1).GetComponent<BoxCollider2D>().enabled = false;
+            this.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+        }
+
 
         private IEnumerator SingleTapLeft()
         {
