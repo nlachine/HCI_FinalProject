@@ -54,9 +54,11 @@ MonoBehaviour:
   minGroundNormalY: 0.9
   gravityModifier: 1
   velocity: {x: 0, y: 0}
+  player: {fileID: 0}
   jumpAudio: {fileID: 8300000, guid: 67975c08d56ceb147bad38572d805aa8, type: 3}
   respawnAudio: {fileID: 8300000, guid: e18959d46b63f3c4c8cc020a433cf848, type: 3}
   ouchAudio: {fileID: 8300000, guid: 6c05149e5a2fba64ba172e25a61074b7, type: 3}
+  attackParticle: {fileID: 0}
   maxSpeed: 3
   jumpTakeOffSpeed: 7
   jumpState: 0
@@ -334,7 +336,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.29763603, y: -0.11799753}
+  m_Offset: {x: 0.4118241, y: -0.11799753}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -345,7 +347,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.40472794, y: 0.5526655}
+  m_Size: {x: 0.6331041, y: 0.5526655}
   m_EdgeRadius: 0
 --- !u!1 &8498417526529172063
 GameObject:
@@ -391,7 +393,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.42425013, y: -0.11799753}
+  m_Offset: {x: -0.5232129, y: -0.11799753}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -402,5 +404,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.35723495, y: 0.5526655}
+  m_Size: {x: 0.5551605, y: 0.5526655}
   m_EdgeRadius: 0
